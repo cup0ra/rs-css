@@ -1,0 +1,117 @@
+@use "@material/icon-button";
+@use "@material/card";
+
+$mdc-typography-styles-headline1: (  font-family: unquote("Montserrat"),  font-size: 97);
+$mdc-typography-styles-headline2: (  font-family: unquote("Montserrat"),  font-size: 61);
+$mdc-typography-styles-headline3: (  font-family: unquote("Montserrat"),  font-size: 48);
+$mdc-typography-styles-headline4: (  font-family: unquote("Montserrat"),  font-size: 34);
+$mdc-typography-styles-headline5: (  font-family: unquote("Montserrat"),  font-size: 24);
+$mdc-typography-styles-headline6: (  font-family: unquote("Montserrat"),  font-size: 20);
+$mdc-typography-styles-body1: (  font-family: unquote("Roboto"),  font-size: 16);
+$mdc-typography-styles-body2: (  font-family: unquote("Roboto"),  font-size: 14);
+$mdc-typography-styles-subtitle1: (  font-family: unquote("Montserrat"),  font-size: 16);
+$mdc-typography-styles-subtitle2: (  font-family: unquote("Montserrat"),  font-size: 14);
+$mdc-typography-styles-button: (  font-family: unquote("Roboto"),  font-size: 14);
+$mdc-typography-styles-overline: (  font-family: unquote("Roboto"),  font-size: 10);
+$mdc-typography-styles-caption: (  font-family: unquote("Roboto"),  font-size: 12);
+
+body{
+    background-color: #fafafa;
+}
+.wrapper{
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: space-between;
+}
+.level{
+    width: 29%;
+    min-width: 375px;
+    height: 98vh;
+    position: relative;
+    z-index: 1;
+    border-radius: 5px;
+    overflow: hidden;
+    
+    &__header{
+        height: 50px;
+        background-color: #000000;
+        color: white;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+       .mdc-top-app-bar__title{
+            font-family: 'Merriweather', serif !important;
+            font-style: italic;
+        }
+        
+    }
+    &__menu{
+        position: absolute;
+        width: 100%;
+        height: 100vh;
+        top: 50px;
+        left: -387px;
+        transition: 0.3s;
+        background-color: white;
+        overflow-y: scroll;
+        
+        .mdc-list-item{
+            height: 28px;
+        }
+        &::-webkit-scrollbar {
+            width: 5px;
+          }
+        
+        &::-webkit-scrollbar-track {
+          box-shadow: inset 0 0 2px white;
+          border-radius: 3px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: rgba(0, 0, 0, 0.116);
+          border-radius: 3px;
+        }
+    }
+    &__help{
+        padding: 10px;
+        box-sizing: border-box;
+        .syntax{
+            width: auto;
+            display: inline-block;
+            padding: 0 10px;
+            background-color: rgba(0, 0, 0, 0.774);
+            color: white;;
+        }
+        strong{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding:0px 2px;
+            margin: 0px 2px;
+            font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.774);
+            color: white;
+        }
+        tag{
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            padding:0px 2px;
+            margin: 0px 2px;
+            font-size: 16px;
+            background-color: rgba(0, 0, 0, 0.774);
+            color: white;
+            &:before {
+                content: "<";
+                font-size: 10px;
+                margin-right: 1px;
+            }
+            &:after {
+                content: ">";
+                font-size: 10px;
+                margin-left: 1px;
+            }
+        }
+       
+    }
+}
