@@ -1,44 +1,42 @@
 module.exports = {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "plugins": [
-      "@typescript-eslint"
+    root: true,
+    parser: '@typescript-eslint/parser',
+    plugins: ['@typescript-eslint'],
+    env: {
+        browser: true,
+        es6: true,
+    },
+    extends: [
+        'airbnb-base',
+        'plugin:@typescript-eslint/recommended',
+        'prettier/@typescript-eslint',
+        'plugin:prettier/recommended',
     ],
-    "env": {
-        "browser": true,
-        "es6": true
+    globals: {
+        Atomics: 'readonly',
+        SharedArrayBuffer: 'readonly',
     },
-        "extends": [
-            "airbnb-base",
-            'plugin:@typescript-eslint/recommended',  
-            'prettier/@typescript-eslint',  
-            'plugin:prettier/recommended',
+    parserOptions: {
+        ecmaVersion: 2018,
+        sourceType: 'module',
+    },
+    settings: {
+        'import/resolver': {
+            node: {
+                extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            },
+        },
+    },
+    rules: {
+        'import/extensions': [
+            'error',
+            'ignorePackages',
+            {
+                js: 'never',
+                jsx: 'never',
+                ts: 'never',
+                tsx: 'never',
+            },
         ],
-    "globals": {
-        "Atomics": "readonly",
-        "SharedArrayBuffer": "readonly"
     },
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module"
-    },
-    "settings": {
-        "import/resolver": {
-          "node": {
-            "extensions": [".js", ".jsx", ".ts", ".tsx"]
-          }
-        }
-      },
-      "rules": {
-        "import/extensions": [
-           "error",
-           "ignorePackages",
-           {
-             "js": "never",
-             "jsx": "never",
-             "ts": "never",
-             "tsx": "never"
-           }
-        ]
-     }
 };

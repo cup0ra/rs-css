@@ -12,8 +12,8 @@ const levels = [
             '<strong>p</strong> selects all <tag>p</tag> elements.',
         ],
         boardMarkup: `
-      <plate/>
-      <plate/>
+      <plate></plate>
+      <plate></plate>
       `,
     },
     {
@@ -29,9 +29,12 @@ const levels = [
             '<strong>p</strong> selects all <tag>p</tag> elements.',
         ],
         boardMarkup: `
-      <bento/>
-      <plate/>
-      <bento/>
+      <bento>
+      </bento>
+      <plate>
+      </plate>
+      <bento>
+      </bento>
       `,
     },
     {
@@ -47,9 +50,9 @@ const levels = [
             '<strong>ul#long</strong> selects <tag>ul id="long"</tag>',
         ],
         boardMarkup: `
-      <plate id="fancy"/>
-      <plate/>
-      <bento/>
+      <plate id="fancy"></plate>
+      <plate></plate>
+      <bento></bento>
       `,
     },
     {
@@ -65,11 +68,9 @@ const levels = [
             '<strong>#fancy&nbsp;&nbsp;span</strong> selects any <tag>span</tag> elements that are inside of the element with <strong>id="fancy"</strong>',
         ],
         boardMarkup: `
-      <bento/>
-      <plate>
-        <apple/>
-      </plate>
-      <apple/>
+      <bento></bento>
+      <plate><apple></apple></plate>
+      <apple></apple>
       `,
     },
     {
@@ -82,15 +83,9 @@ const levels = [
             '<strong>#cool&nbsp;span</strong> selects all <tag>span</tag> elements that are inside of elements with <strong>id="cool"</strong>',
         ],
         boardMarkup: `
-      <bento>
-      <orange/>
-      </bento>
-      <plate id="fancy">
-        <pickle/>
-      </plate>
-      <plate>
-        <pickle/>
-      </plate>
+      <bento><orange></orange></bento>
+      <plate id="fancy"><pickle></pickle></plate>
+      <plate><pickle></pickle></plate>
       `,
     },
     {
@@ -103,12 +98,10 @@ const levels = [
             'The class selector selects all elements with that class attribute. Elements can only have one ID, but many classes.',
         examples: ['<strong>.neato</strong> selects all elements with <strong>class="neato"</strong>'],
         boardMarkup: `
-      <apple/>
-      <apple class="small"/>
-      <plate>
-        <apple class="small"/>
-      </plate>
-      <plate/>
+      <apple></apple>
+      <apple class="small"></apple>
+      <plate><apple class="small"></apple></plate>
+      <plate></plate>
       `,
     },
     {
@@ -122,17 +115,11 @@ const levels = [
             '<strong>#big.wide</strong> selects all elements with <strong>id="big"</strong> that also have <strong>class="wide"</strong>',
         ],
         boardMarkup: `
-      <apple/>
-      <apple class="small"/>
-      <bento>
-        <orange class="small"/>
-      </bento>
-      <plate>
-        <orange/>
-      </plate>
-      <plate>
-        <orange class="small"/>
-      </plate>`,
+      <apple></apple>
+      <apple class="small"/></apple>
+      <bento><orange class="small"></orange></bento>
+      <plate><orange></orange></plate>
+      <plate><orange class="small"></orange></plate>`,
     },
     {
         doThis: 'Select the small oranges in the bentos',
@@ -141,19 +128,11 @@ const levels = [
         helpTitle: 'You can do it...',
         help: 'Combine what you learned in the last few levels to solve this one!',
         boardMarkup: `
-      <bento>
-        <orange/>
-      </bento>
-      <orange class="small"/>
-      <bento>
-        <orange class="small"/>
-      </bento>
-      <bento>
-        <apple class="small"/>
-      </bento>
-      <bento>
-        <orange class="small"/>
-      </bento>
+      <bento><orange></orange></bento>
+      <orange class="small"></orange>
+      <bento><orange class="small"></orange></bento>
+      <bento><apple class="small"></apple></bento>
+      <bento><orange class="small"></apple></bento>
       `,
     },
     {
