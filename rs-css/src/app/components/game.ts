@@ -2,65 +2,89 @@ import Level from './level';
 import levels from '../../../assets/data/levelGame';
 
 export default class Game extends Level {
-    formEditor = document.createElement('form');
-
-    table = document.createElement('section');
-
-    htmlCode = document.createElement('div');
-
     currentElem: HTMLElement | null = null;
 
-    createBlock = (tagName: string, className: string[], ...arg: any): HTMLElement => {
-        const container = document.createElement(tagName);
-        container.classList.add(...className);
-        container.append(...arg);
-        return container;
-    };
-
-    createHeaderEditorOrViewer = (tagName: string, className: string, text1: string, text2: string): HTMLElement => {
-        const headerEditor = document.createElement(tagName);
-        headerEditor.classList.add(`${className}__header`);
-        headerEditor.append(
-            this.createElement(tagName, `${className}__header--item`, text1),
-            this.createElement(tagName, `${className}__header--item`, text2),
-        );
-        return headerEditor;
-    };
+    isPassedLevel = true;
 
     createFormEditor = (): HTMLFormElement => {
-        const input = document.createElement('input');
-        input.classList.add('form__input', 'blink');
-        input.placeholder = 'Type in a CSS selector';
-        input.type = 'text';
+        this.formEditor.classList.add('form');
+        this.input.classList.add('form__input', 'blink');
+        this.input.placeholder = 'Type in a CSS selector';
+        this.input.type = 'text';
+        this.input.focus();
 
         const button = document.createElement('button');
         button.classList.add('form__button', 'mdc-button', 'mdc-button--raised');
         button.type = 'submit';
+        button.append(this.createElement('span', ['mdc-button__label'], 'Enter'));
 
-        const spanButton = document.createElement('span');
-        spanButton.classList.add('mdc-button__label');
-        spanButton.textContent = 'Enter';
-
-        button.append(spanButton);
-        this.formEditor.classList.add('form');
-        this.formEditor.append(input, button);
+        this.formEditor.append(
+            this.input,
+            button,
+            this.createButton(
+                ['form__button-help', 'mdc-icon-button', 'material-icons'],
+                'help',
+                'button',
+                this.showAnswer,
+            ),
+        );
 
         this.formEditor.addEventListener('submit', (e: any) => {
             e.preventDefault();
-            if (input.value === levels[this.levelActive].selector) {
+            if (this.input.value === levels[this.levelActive].selector) {
+                this.table.querySelectorAll('*').forEach((item: Element) => {
+                    if (item.closest(levels[this.levelActive].selector)) {
+                        item.closest(`${levels[this.levelActive].selector}`).classList.add('win');
+                        item.addEventListener('animationend', () => {
+                            this.loudNewLewel();
+                        });
+                    }
+                });
+                this.setLocalStorageProgress();
                 this.levelActive += 1;
-                this.loudNewLewel();
-                input.value = '';
+                this.isPassedLevel = true;
+            } else {
+                document.querySelector('.editor').classList.add('shake');
+                document.querySelector('.editor').addEventListener('animationend', () => {
+                    document.querySelector('.editor').classList.remove('shake');
+                });
             }
-
-            console.log(input.value, levels[this.levelActive].selector);
         });
 
-        input.addEventListener('input', () => {
-            input.value.length === 0 ? input.classList.add('blink') : input.classList.remove('blink');
+        this.input.addEventListener('input', () => {
+            return this.input.value.length === 0
+                ? this.input.classList.add('blink')
+                : this.input.classList.remove('blink');
         });
 
         return this.formEditor;
+    };
+
+    setLocalStorageProgress = (): void => {
+        const progress = JSON.parse(localStorage.getItem('progress')) || {};
+        const result =
+            progress[`${this.levelActive}`] && progress[`${this.levelActive}`].correct
+                ? progress
+                : { ...progress, [this.levelActive]: { correct: this.isPassedLevel, incorrect: !this.isPassedLevel } };
+        localStorage.setItem('progress', JSON.stringify(result));
+    };
+
+    showAnswer = (): void => {
+        if (this.isPrintText) {
+            this.isPrintText = false;
+            const arrayResponseLetters: string[] = levels[this.levelActive].selector.split('');
+            this.input.classList.remove('blink');
+            let count = 0;
+            const printText = (): any => {
+                if (count === arrayResponseLetters.length) return this.input.value;
+                this.input.value += arrayResponseLetters[count];
+                count += 1;
+                this.input.focus();
+                return setTimeout(printText, 500);
+            };
+            printText();
+            this.isPassedLevel = false;
+        }
     };
 
     createLineNumber = (): HTMLDivElement => {
@@ -89,10 +113,10 @@ export default class Game extends Level {
         const elementsCode = Array.prototype.slice.call(this.htmlCode.querySelectorAll('*'));
         const elementsTable = Array.prototype.slice.call(this.table.querySelectorAll('*'));
         const index = e.toElement.tagName !== 'DIV' ? elementsTable.indexOf(e.target) : elementsCode.indexOf(e.target);
-        this.showTooltip(elementsTable[index]);
         if (e.type === 'mouseover') {
             if (this.currentElem) return;
             this.currentElem = e.target;
+            this.showTooltip(elementsTable[index]);
             elementsTable[index].classList.add('active');
             elementsCode[index].classList.add('bold');
         }
@@ -101,21 +125,23 @@ export default class Game extends Level {
             elementsTable[index].classList.remove('active');
             elementsCode[index].classList.remove('bold');
             this.currentElem = null;
+            this.showTooltip(elementsTable[index]);
         }
     };
 
     createHtmlCode = (): HTMLDivElement => {
         this.htmlCode.classList.add('html-code');
-        const www = this.getViewerCode(levels[this.levelActive].boardMarkup);
+        this.htmlCode.append(this.getViewerCode(levels[this.levelActive].boardMarkup));
 
-        this.htmlCode.append(www);
         this.htmlCode.addEventListener('mouseover', (e: any) => {
-            if (e.target.className !== 'html-code') this.highlightElement(e);
-            e.stopPropagation();
+            if (e.target.className !== 'html-code') {
+                this.highlightElement(e);
+            }
         });
         this.htmlCode.addEventListener('mouseout', (e: any) => {
-            if (e.target.className !== 'html-code') this.highlightElement(e);
-            e.stopPropagation();
+            if (e.target.className !== 'html-code') {
+                this.highlightElement(e);
+            }
         });
         return this.htmlCode;
     };
@@ -123,13 +149,20 @@ export default class Game extends Level {
     createTable = (): HTMLElement => {
         this.table.classList.add('table', 'mdc-card');
         this.table.innerHTML = levels[this.levelActive].boardMarkup;
+        this.table.querySelectorAll('*').forEach((item: any) => {
+            if (item.closest(levels[this.levelActive].selector)) {
+                item.closest(`${levels[this.levelActive].selector}`).classList.add('selected-element');
+            }
+        });
         this.table.addEventListener('mouseover', (e: any) => {
-            if (e.target.className !== 'table mdc-card') this.highlightElement(e);
-            e.stopPropagation();
+            if (e.target.className !== 'table mdc-card') {
+                this.highlightElement(e);
+            }
         });
         this.table.addEventListener('mouseout', (e: any) => {
-            if (e.target.className !== 'table mdc-card') this.highlightElement(e);
-            e.stopPropagation();
+            if (e.target.className !== 'table mdc-card') {
+                this.highlightElement(e);
+            }
         });
         return this.table;
     };
@@ -141,7 +174,7 @@ export default class Game extends Level {
             this.createBlock(
                 'div',
                 ['layout', 'mdc-card'],
-                this.createElement('h2', 'layout__header', levels[this.levelActive].doThis),
+                this.createElement('h2', ['layout__header'], levels[this.levelActive].doThis),
                 this.createTable(),
             ),
             this.createBlock(
@@ -163,7 +196,11 @@ export default class Game extends Level {
     initApp = (): void => {
         const container = document.createElement('div');
         container.classList.add('wrapper');
-        container.append(this.createBlockLevel(), this.createWrapperGame(), this.createElement('span', 'tooltip', ''));
+        container.append(
+            this.createBlockLevel(),
+            this.createWrapperGame(),
+            this.createElement('span', ['tooltip'], ''),
+        );
         document.body.append(container);
     };
 }

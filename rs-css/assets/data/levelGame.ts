@@ -50,7 +50,7 @@ const levels = [
             '<strong>ul#long</strong> selects <tag>ul id="long"</tag>',
         ],
         boardMarkup: `
-      <plate id="fancy"></plate>
+      <plate id="fancy" class="qwerty"></plate>
       <plate></plate>
       <bento></bento>
       `,
