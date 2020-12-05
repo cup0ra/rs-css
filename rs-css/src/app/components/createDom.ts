@@ -11,9 +11,9 @@ export default class CreateDom {
 
     containerHelp = document.createElement('div');
 
-    input = document.createElement('input');
+    input = document.createElement('textarea');
 
-    table = document.createElement('section');
+    table = document.createElement('div');
 
     htmlCode = document.createElement('div');
 
@@ -40,6 +40,14 @@ export default class CreateDom {
         const element = document.createElement(name);
         element.classList.add(...className);
         element.innerHTML = text || '';
+        return element;
+    };
+
+    createLink = (className: string[], text: string, href: string): HTMLElement => {
+        const element = document.createElement('a');
+        element.classList.add(...className);
+        element.innerHTML = text || '';
+        element.href = href;
         return element;
     };
 

@@ -1,3 +1,11 @@
+import CodeMirror from 'codemirror';
+import 'codemirror/lib/codemirror.css';
+import 'codemirror/theme/neat.css';
+import 'codemirror/mode/xml/xml';
+import 'codemirror/mode/css/css';
+import 'codemirror/addon/display/placeholder';
+import 'codemirror/theme/dracula.css';
+
 import Level from './level';
 import levels from '../../../assets/data/levelGame';
 
@@ -6,21 +14,27 @@ export default class Game extends Level {
 
     isPassedLevel = true;
 
+    config = {
+        theme: 'dracula',
+        value: 'Type in a CSS selector',
+        tabSize: 1,
+        lineNumbers: false,
+        mode: 'css',
+    };
+
     createFormEditor = (): HTMLFormElement => {
         this.formEditor.classList.add('form');
         this.input.classList.add('form__input', 'blink');
         this.input.placeholder = 'Type in a CSS selector';
-        this.input.type = 'text';
-        this.input.focus();
 
-        const button = document.createElement('button');
-        button.classList.add('form__button', 'mdc-button', 'mdc-button--raised');
-        button.type = 'submit';
-        button.append(this.createElement('span', ['mdc-button__label'], 'Enter'));
+        const buttonEnter = document.createElement('button');
+        buttonEnter.classList.add('form__button', 'mdc-button', 'mdc-button--raised');
+        buttonEnter.type = 'submit';
+        buttonEnter.append(this.createElement('span', ['mdc-button__label'], 'Enter'));
 
         this.formEditor.append(
             this.input,
-            button,
+            buttonEnter,
             this.createButton(
                 ['form__button-help', 'mdc-icon-button', 'material-icons'],
                 'help',
@@ -29,26 +43,9 @@ export default class Game extends Level {
             ),
         );
 
-        this.formEditor.addEventListener('submit', (e: any) => {
+        this.formEditor.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            if (this.input.value === levels[this.levelActive].selector) {
-                this.table.querySelectorAll('*').forEach((item: Element) => {
-                    if (item.closest(levels[this.levelActive].selector)) {
-                        item.closest(`${levels[this.levelActive].selector}`).classList.add('win');
-                        item.addEventListener('animationend', () => {
-                            this.loudNewLewel();
-                        });
-                    }
-                });
-                this.setLocalStorageProgress();
-                this.levelActive += 1;
-                this.isPassedLevel = true;
-            } else {
-                document.querySelector('.editor').classList.add('shake');
-                document.querySelector('.editor').addEventListener('animationend', () => {
-                    document.querySelector('.editor').classList.remove('shake');
-                });
-            }
+            this.checkingResult();
         });
 
         this.input.addEventListener('input', () => {
@@ -58,6 +55,37 @@ export default class Game extends Level {
         });
 
         return this.formEditor;
+    };
+
+    checkingResult = (): void => {
+        const elementsTable = Array.prototype.slice.call(this.table.querySelectorAll('*'));
+        const isElements = elementsTable.every(
+            (item: Element) =>
+                item.closest(`.table ${this.editor.getValue()}`) ===
+                item.closest(`.table ${levels[this.levelActive].selector}`),
+        );
+
+        if (isElements) {
+            console.log(this.editor.getValue(), levels[this.levelActive].selector, isElements);
+            this.table.querySelectorAll('*').forEach((item: Element) => {
+                if (item.closest(levels[this.levelActive].selector)) {
+                    console.log('start');
+                    item.closest(`${levels[this.levelActive].selector}`).classList.add('win');
+                    item.addEventListener('animationend', () => {
+                        console.log('end');
+                        this.loudNewLewel();
+                    });
+                }
+            });
+            this.setLocalStorageProgress();
+            this.levelActive += 1;
+            this.isPassedLevel = true;
+        } else {
+            document.querySelector('.editor').classList.add('shake');
+            document.querySelector('.editor').addEventListener('animationend', () => {
+                document.querySelector('.editor').classList.remove('shake');
+            });
+        }
     };
 
     setLocalStorageProgress = (): void => {
@@ -71,16 +99,19 @@ export default class Game extends Level {
 
     showAnswer = (): void => {
         if (this.isPrintText) {
+            this.editor.setValue('');
             this.isPrintText = false;
             const arrayResponseLetters: string[] = levels[this.levelActive].selector.split('');
             this.input.classList.remove('blink');
             let count = 0;
-            const printText = (): any => {
-                if (count === arrayResponseLetters.length) return this.input.value;
+            const printText = (): void => {
+                if (count === arrayResponseLetters.length) return;
                 this.input.value += arrayResponseLetters[count];
+                this.editor.setValue(this.editor.getValue() + arrayResponseLetters[count]);
                 count += 1;
-                this.input.focus();
-                return setTimeout(printText, 500);
+                this.editor.focus();
+                this.editor.setCursor(this.editor.lineCount(), 0);
+                setTimeout(printText, 500);
             };
             printText();
             this.isPassedLevel = false;
@@ -90,7 +121,7 @@ export default class Game extends Level {
     createLineNumber = (): HTMLDivElement => {
         const lineNumber = document.createElement('div');
         lineNumber.classList.add('line-number');
-        for (let i = 0; i < 15; i += 1) {
+        for (let i = 0; i < 23; i += 1) {
             lineNumber.innerHTML += `${i + 1}<br>`;
         }
         return lineNumber;
@@ -98,31 +129,33 @@ export default class Game extends Level {
 
     showTooltip = (element: HTMLElement): void => {
         if (element.tagName) {
-            const tooltipText = `&lt;${element.tagName.toLocaleLowerCase()}${this.getAttributes(
+            const tooltipText = `<${element.tagName.toLocaleLowerCase()}${this.getAttributes(
                 element,
-            )}>&lt/${element.tagName.toLocaleLowerCase()}>`;
+            )}></${element.tagName.toLocaleLowerCase()}>`;
             const node = document.querySelector('.tooltip') as HTMLElement;
             node.classList.toggle('hidden');
-            node.innerHTML = tooltipText;
+            node.innerHTML = this.hljs.highlightAuto(tooltipText).value;
             node.style.left = `${element.getClientRects()[0].x}px`;
-            node.style.top = `${element.getClientRects()[0].y - 50}px`;
+            node.style.top = `${element.getClientRects()[0].y - 70}px`;
         }
     };
 
     highlightElement = (e: any): void => {
-        const elementsCode = Array.prototype.slice.call(this.htmlCode.querySelectorAll('*'));
+        const elementsCode = Array.prototype.slice.call(this.htmlCode.querySelectorAll('div'));
         const elementsTable = Array.prototype.slice.call(this.table.querySelectorAll('*'));
-        const index = e.toElement.tagName !== 'DIV' ? elementsTable.indexOf(e.target) : elementsCode.indexOf(e.target);
+        const index = e.target.closest('.table')
+            ? elementsTable.indexOf(e.target)
+            : elementsCode.indexOf(e.target.closest('.wrap'));
         if (e.type === 'mouseover') {
             if (this.currentElem) return;
             this.currentElem = e.target;
             this.showTooltip(elementsTable[index]);
-            elementsTable[index].classList.add('active');
+            elementsTable[index].dataset.hover = true;
             elementsCode[index].classList.add('bold');
         }
         if (e.type === 'mouseout') {
             if (!this.currentElem) return;
-            elementsTable[index].classList.remove('active');
+            elementsTable[index].removeAttribute('data-hover');
             elementsCode[index].classList.remove('bold');
             this.currentElem = null;
             this.showTooltip(elementsTable[index]);
@@ -131,29 +164,15 @@ export default class Game extends Level {
 
     createHtmlCode = (): HTMLDivElement => {
         this.htmlCode.classList.add('html-code');
-        this.htmlCode.append(this.getViewerCode(levels[this.levelActive].boardMarkup));
 
-        this.htmlCode.addEventListener('mouseover', (e: any) => {
-            if (e.target.className !== 'html-code') {
-                this.highlightElement(e);
-            }
-        });
-        this.htmlCode.addEventListener('mouseout', (e: any) => {
-            if (e.target.className !== 'html-code') {
-                this.highlightElement(e);
-            }
-        });
+        this.htmlCode.addEventListener('mouseover', (e: Event) => this.highlightElement(e));
+        this.htmlCode.addEventListener('mouseout', (e: Event) => this.highlightElement(e));
+
         return this.htmlCode;
     };
 
     createTable = (): HTMLElement => {
         this.table.classList.add('table', 'mdc-card');
-        this.table.innerHTML = levels[this.levelActive].boardMarkup;
-        this.table.querySelectorAll('*').forEach((item: any) => {
-            if (item.closest(levels[this.levelActive].selector)) {
-                item.closest(`${levels[this.levelActive].selector}`).classList.add('selected-element');
-            }
-        });
         this.table.addEventListener('mouseover', (e: any) => {
             if (e.target.className !== 'table mdc-card') {
                 this.highlightElement(e);
@@ -176,6 +195,7 @@ export default class Game extends Level {
                 ['layout', 'mdc-card'],
                 this.createElement('h2', ['layout__header'], levels[this.levelActive].doThis),
                 this.createTable(),
+                this.createElement('div', ['moon'], ''),
             ),
             this.createBlock(
                 'div',
@@ -199,8 +219,29 @@ export default class Game extends Level {
         container.append(
             this.createBlockLevel(),
             this.createWrapperGame(),
+            this.createBlock(
+                'footer',
+                ['footer'],
+                this.createLink(['git'], 'cup0ra', 'https://github.com/cup0ra'),
+                this.createLink(['rss'], '', 'https://rs.school/js/'),
+            ),
             this.createElement('span', ['tooltip'], ''),
         );
+
         document.body.append(container);
+        this.editor = CodeMirror.fromTextArea(this.input, this.config);
+        this.editor.on('beforeChange', function (instance: any, change: any) {
+            const newtext = change.text.join('').replace(/\n/g, '');
+            change.update(change.from, change.to, [newtext]);
+            return true;
+        });
+
+        this.editor.setOption('extraKeys', {
+            Enter: () => {
+                this.checkingResult();
+            },
+        });
+        this.editor.getTextArea();
+        this.loudNewLewel();
     };
 }
