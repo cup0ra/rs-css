@@ -235,7 +235,7 @@ const levels = [
     {
         selectorName: 'First Child Pseudo-selector',
         helpTitle: 'Select a first child element inside of another element',
-        doThis: 'Select the top bat',
+        doThis: 'Select the first skull on earth',
         selector: 'earth :first-child',
         syntax: ':first-child',
 
@@ -260,7 +260,7 @@ const levels = [
     {
         selectorName: 'Last Child Pseudo-selector',
         helpTitle: 'Select the last element inside of another element',
-        doThis: 'Select the small apple and the pickle',
+        doThis: 'Select the last skull on earth',
         selector: 'earth :last-child',
         syntax: ':last-child',
         help:
@@ -281,7 +281,7 @@ const levels = [
     {
         selectorName: 'Nth Child Pseudo-selector',
         helpTitle: 'Select an element by its order in another element',
-        doThis: 'Select the 3rd plate',
+        doThis: 'Select the second skull on earth',
         selector: 'earth :nth-child(2)',
         syntax: ':nth-child(A)',
         help: 'Selects the <strong>nth</strong> (Ex: 1st, 3rd, 12th etc.) child element in another element.',

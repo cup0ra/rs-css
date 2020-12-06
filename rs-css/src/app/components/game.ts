@@ -141,24 +141,26 @@ export default class Game extends Level {
     };
 
     highlightElement = (e: any): void => {
-        const elementsCode = Array.prototype.slice.call(this.htmlCode.querySelectorAll('div'));
-        const elementsTable = Array.prototype.slice.call(this.table.querySelectorAll('*'));
-        const index = e.target.closest('.table')
-            ? elementsTable.indexOf(e.target)
-            : elementsCode.indexOf(e.target.closest('.wrap'));
-        if (e.type === 'mouseover') {
-            if (this.currentElem) return;
-            this.currentElem = e.target;
-            this.showTooltip(elementsTable[index]);
-            elementsTable[index].dataset.hover = true;
-            elementsCode[index].classList.add('bold');
-        }
-        if (e.type === 'mouseout') {
-            if (!this.currentElem) return;
-            elementsTable[index].removeAttribute('data-hover');
-            elementsCode[index].classList.remove('bold');
-            this.currentElem = null;
-            this.showTooltip(elementsTable[index]);
+        if (this.isGame) {
+            const elementsCode = Array.prototype.slice.call(this.htmlCode.querySelectorAll('div'));
+            const elementsTable = Array.prototype.slice.call(this.table.querySelectorAll('*'));
+            const index = e.target.closest('.table')
+                ? elementsTable.indexOf(e.target)
+                : elementsCode.indexOf(e.target.closest('.wrap'));
+            if (e.type === 'mouseover') {
+                if (this.currentElem) return;
+                this.currentElem = e.target;
+                this.showTooltip(elementsTable[index]);
+                elementsTable[index].dataset.hover = true;
+                elementsCode[index].classList.add('bold');
+            }
+            if (e.type === 'mouseout') {
+                if (!this.currentElem) return;
+                elementsTable[index].removeAttribute('data-hover');
+                elementsCode[index].classList.remove('bold');
+                this.currentElem = null;
+                this.showTooltip(elementsTable[index]);
+            }
         }
     };
 
@@ -223,6 +225,7 @@ export default class Game extends Level {
                 'footer',
                 ['footer'],
                 this.createLink(['git'], 'cup0ra', 'https://github.com/cup0ra'),
+                this.createElement('div', ['years'], '© RS-CSS 2020'),
                 this.createLink(['rss'], '', 'https://rs.school/js/'),
             ),
             this.createElement('span', ['tooltip'], ''),
@@ -241,6 +244,16 @@ export default class Game extends Level {
                 this.checkingResult();
             },
         });
+
+        this.editor.on('change', (editor: any) => {
+            console.log(editor.getValue().length, this);
+            if (editor.getValue().length > 0) {
+                document.querySelector('.CodeMirror-lines').classList.remove('blink');
+            } else {
+                document.querySelector('.CodeMirror-lines').classList.add('blink');
+            }
+        });
+        document.querySelector('.CodeMirror-lines').classList.add('blink');
         this.editor.getTextArea();
         this.loudNewLewel();
     };

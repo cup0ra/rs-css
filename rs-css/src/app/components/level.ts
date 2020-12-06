@@ -2,7 +2,6 @@
 import hljs from 'highlight.js/lib/core';
 // @ts-ignore
 import xml from 'highlight.js/lib/languages/xml';
-import data from '../../../assets/data/data.json';
 import levels from '../../../assets/data/levelGame';
 import CreateDom from './createDom';
 
@@ -12,6 +11,8 @@ class Level extends CreateDom {
     isMenuActive = false;
 
     isPrintText = true;
+
+    isGame = true;
 
     levelActive = +localStorage.getItem('level') || 0;
 
@@ -104,7 +105,7 @@ class Level extends CreateDom {
     };
 
     showNextLevel = (): void => {
-        if (+this.levelActive <= levels.length - 1) {
+        if (+this.levelActive < levels.length - 1) {
             this.levelActive += 1;
             this.loudNewLewel();
         }
@@ -150,34 +151,41 @@ class Level extends CreateDom {
     };
 
     loudNewLewel = (): void => {
-        this.htmlCode.innerHTML = ``;
-        this.editor.setValue('');
-        this.editor.focus();
-        this.input.value = '';
-        this.input.classList.add('blink');
-        this.input.focus();
-        this.isPrintText = true;
-        this.htmlCode.append(this.getViewerCode());
-        this.htmlCode.querySelectorAll('.code').forEach((block) => {
-            hljs.highlightBlock(block);
-        });
-        this.table.innerHTML = levels[this.levelActive].boardMarkup;
-        document.querySelector('.layout__header').innerHTML = levels[this.levelActive].doThis;
-        this.table.querySelectorAll('*').forEach((item: Element) => {
-            if (item.closest(levels[this.levelActive].selector)) {
-                if (item.tagName === 'BAT' || item.className === 'red') {
-                    item.closest(`.table ${levels[this.levelActive].selector}`).classList.add('selected-bat');
-                } else if (item.tagName === 'PUMPKIN' || item.tagName === 'SKULL' || item.tagName === 'CASPER') {
-                    item.closest(`.table ${levels[this.levelActive].selector}`).classList.add('selected-pumpkin');
-                } else {
-                    item.closest(`.table ${levels[this.levelActive].selector}`).classList.add('selected-element');
+        if (this.levelActive < levels.length) {
+            this.isGame = true;
+            this.htmlCode.innerHTML = ``;
+            this.editor.setValue('');
+            this.editor.focus();
+            this.input.value = '';
+            this.input.classList.add('blink');
+            this.input.focus();
+            this.isPrintText = true;
+            this.htmlCode.append(this.getViewerCode());
+            this.htmlCode.querySelectorAll('.code').forEach((block) => {
+                hljs.highlightBlock(block);
+            });
+            this.table.innerHTML = levels[this.levelActive].boardMarkup;
+            document.querySelector('.layout__header').innerHTML = levels[this.levelActive].doThis;
+            this.table.querySelectorAll('*').forEach((item: Element) => {
+                if (item.closest(levels[this.levelActive].selector)) {
+                    if (item.tagName === 'BAT' || item.className === 'red') {
+                        item.closest(`.table ${levels[this.levelActive].selector}`).classList.add('selected-bat');
+                    } else if (item.tagName === 'PUMPKIN' || item.tagName === 'SKULL' || item.tagName === 'CASPER') {
+                        item.closest(`.table ${levels[this.levelActive].selector}`).classList.add('selected-pumpkin');
+                    } else {
+                        item.closest(`.table ${levels[this.levelActive].selector}`).classList.add('selected-element');
+                    }
                 }
-            }
-        });
-        this.containerLevel.removeChild(this.containerHelp);
-        this.containerLevel.append(this.createLevelHelp());
-        this.toggleListActives();
-        localStorage.setItem('level', `${this.levelActive}`);
+            });
+            this.containerLevel.removeChild(this.containerHelp);
+            this.containerLevel.append(this.createLevelHelp());
+            this.toggleListActives();
+            localStorage.setItem('level', `${this.levelActive}`);
+        } else {
+            this.isGame = false;
+            this.table.innerHTML = '';
+            this.table.append(this.createElement('h2', ['game-over'], 'GAME OVER'));
+        }
     };
 
     getAttributes = (child: any): string => {
