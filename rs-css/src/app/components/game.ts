@@ -1,13 +1,12 @@
 import CodeMirror from 'codemirror';
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/neat.css';
-import 'codemirror/mode/xml/xml';
 import 'codemirror/mode/css/css';
 import 'codemirror/addon/display/placeholder';
 import 'codemirror/theme/dracula.css';
 
 import Level from './level';
-import levels from '../../../assets/data/levelGame';
+import { DataLevels } from '../interfase/interfase';
 
 export default class Game extends Level {
     currentElem: HTMLElement | null = null;
@@ -21,6 +20,11 @@ export default class Game extends Level {
         lineNumbers: false,
         mode: 'css',
     };
+
+    constructor(state: DataLevels[]) {
+        super(state);
+        this.levels = state;
+    }
 
     createFormEditor = (): HTMLFormElement => {
         this.formEditor.classList.add('form');
@@ -45,7 +49,7 @@ export default class Game extends Level {
 
         this.formEditor.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            this.checkingResult();
+            if (this.isPrintText && this.isGame) this.checkingResult();
         });
 
         this.input.addEventListener('input', () => {
@@ -62,17 +66,14 @@ export default class Game extends Level {
         const isElements = elementsTable.every(
             (item: Element) =>
                 item.closest(`.table ${this.editor.getValue()}`) ===
-                item.closest(`.table ${levels[this.levelActive].selector}`),
+                item.closest(`.table ${this.levels[this.levelActive].selector}`),
         );
 
         if (isElements) {
-            console.log(this.editor.getValue(), levels[this.levelActive].selector, isElements);
             this.table.querySelectorAll('*').forEach((item: Element) => {
-                if (item.closest(levels[this.levelActive].selector)) {
-                    console.log('start');
-                    item.closest(`${levels[this.levelActive].selector}`).classList.add('win');
+                if (item.closest(this.levels[this.levelActive].selector)) {
+                    item.closest(`${this.levels[this.levelActive].selector}`).classList.add('win');
                     item.addEventListener('animationend', () => {
-                        console.log('end');
                         this.loudNewLewel();
                     });
                 }
@@ -98,14 +99,17 @@ export default class Game extends Level {
     };
 
     showAnswer = (): void => {
-        if (this.isPrintText) {
+        if (this.isPrintText && this.isGame) {
             this.editor.setValue('');
             this.isPrintText = false;
-            const arrayResponseLetters: string[] = levels[this.levelActive].selector.split('');
+            const arrayResponseLetters: string[] = this.levels[this.levelActive].selector.split('');
             this.input.classList.remove('blink');
             let count = 0;
             const printText = (): void => {
-                if (count === arrayResponseLetters.length) return;
+                if (count === arrayResponseLetters.length) {
+                    this.isPrintText = true;
+                    return;
+                }
                 this.input.value += arrayResponseLetters[count];
                 this.editor.setValue(this.editor.getValue() + arrayResponseLetters[count]);
                 count += 1;
@@ -195,7 +199,7 @@ export default class Game extends Level {
             this.createBlock(
                 'div',
                 ['layout', 'mdc-card'],
-                this.createElement('h2', ['layout__header'], levels[this.levelActive].doThis),
+                this.createElement('h2', ['layout__header'], this.levels[this.levelActive].doThis),
                 this.createTable(),
                 this.createElement('div', ['moon'], ''),
             ),
@@ -215,6 +219,31 @@ export default class Game extends Level {
         return container;
     };
 
+    createCodeMirrorTextaria = (): void => {
+        this.editor = CodeMirror.fromTextArea(this.input, this.config);
+        this.editor.on('beforeChange', (instance: any, change: any) => {
+            const newtext = change.text.join('').replace(/\n/g, '');
+            change.update(change.from, change.to, [newtext]);
+            return true;
+        });
+
+        this.editor.setOption('extraKeys', {
+            Enter: () => {
+                this.checkingResult();
+            },
+        });
+
+        this.editor.on('change', (editor: any) => {
+            if (editor.getValue().length > 0) {
+                document.querySelector('.CodeMirror-lines').classList.remove('blink');
+            } else {
+                document.querySelector('.CodeMirror-lines').classList.add('blink');
+            }
+        });
+        document.querySelector('.CodeMirror-lines').classList.add('blink');
+        this.editor.getTextArea();
+    };
+
     initApp = (): void => {
         const container = document.createElement('div');
         container.classList.add('wrapper');
@@ -232,29 +261,7 @@ export default class Game extends Level {
         );
 
         document.body.append(container);
-        this.editor = CodeMirror.fromTextArea(this.input, this.config);
-        this.editor.on('beforeChange', function (instance: any, change: any) {
-            const newtext = change.text.join('').replace(/\n/g, '');
-            change.update(change.from, change.to, [newtext]);
-            return true;
-        });
-
-        this.editor.setOption('extraKeys', {
-            Enter: () => {
-                this.checkingResult();
-            },
-        });
-
-        this.editor.on('change', (editor: any) => {
-            console.log(editor.getValue().length, this);
-            if (editor.getValue().length > 0) {
-                document.querySelector('.CodeMirror-lines').classList.remove('blink');
-            } else {
-                document.querySelector('.CodeMirror-lines').classList.add('blink');
-            }
-        });
-        document.querySelector('.CodeMirror-lines').classList.add('blink');
-        this.editor.getTextArea();
+        this.createCodeMirrorTextaria();
         this.loudNewLewel();
     };
 }

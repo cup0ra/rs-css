@@ -31,7 +31,7 @@ const levels = [
         boardMarkup: `
       <earth></earth>
       <pumpkin></pumpkin>
-      <earth></earth>
+      <tombstone></tombstone>
       `,
     },
     {
@@ -55,7 +55,7 @@ const levels = [
     {
         helpTitle: 'Select an element inside another element',
         selectorName: 'Descendant Selector',
-        doThis: 'Select the skull on the tombstone',
+        doThis: 'Select the skull on the earth',
         selector: 'earth skull',
         syntax: 'A&nbsp;&nbsp;B',
         help:
@@ -202,7 +202,7 @@ const levels = [
         selectorName: 'Adjacent Sibling Selector',
         syntax: 'A + B',
         help:
-            "This selects all <strong>B</strong> elements that directly follow <strong>A</strong>. Elements that follow one another are called siblings. They're on the same level, or depth. <br/><br/>In the HTML markup for this level, elements that have the same indentation are siblings.",
+            "This selects all <strong>B</strong> elements that directly follow <strong>A</strong>. Elements that follow one another are called siblings. They're on the same level, or depth. ",
         examples: [
             '<strong>p + .intro</strong> selects every element with <strong>class="intro"</strong> that directly follows a <tag>p</tag>',
             '<strong>div + a</strong> selects every <tag>a</tag> element that directly follows a <tag>div</tag>',
@@ -240,7 +240,7 @@ const levels = [
         syntax: ':first-child',
 
         help:
-            'You can select the first child element. A child element is any element that is directly nested in another element. You can combine this pseudo-selector with other selectors.',
+            'You can select the first child element. A child element is any element that is directly nested in another element.',
         examples: [
             '<strong>:first-child</strong> selects all first child elements.',
             '<strong>p:first-child</strong> selects all first child <tag>p</tag> elements.',
@@ -264,7 +264,7 @@ const levels = [
         selector: 'earth :last-child',
         syntax: ':last-child',
         help:
-            'You can use this selector to select an element that is the last child element inside of another element. <br><br>Pro Tip &rarr; In cases where there is only one element, that element counts as the first-child, only-child and last-child!',
+            'You can use this selector to select an element that is the last child element inside of another element.',
         examples: [
             '<strong>:last-child</strong> selects all last-child elements.',
             '<strong>span:last-child</strong> selects all last-child <tag>span</tag> elements.',

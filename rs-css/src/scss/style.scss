@@ -348,22 +348,21 @@ body {
 
 .footer {
     flex: 0 1 100%;
-    height: 5vh;
+    height: 4vh;
     color: #f0f7f2;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     .rss {
         position: relative;
-        margin-left: 50px;
         &::before {
             content: '';
             position: absolute;
             width: 60px;
             height: 35px;
             top: -20px;
-
-            background-image: url(../../assets/image/rs_school_js.svg);
+            left: -30px;
+            background-image: url(../../assets/img/rs_school_js.svg);
             background-size: 60px 35px;
             transition: 0.3s;
         }
@@ -377,7 +376,7 @@ body {
             color: #f1fa8c;
         }
         &:hover::before {
-            background-image: url(../../assets/image/git-hover.svg);
+            background-image: url(../../assets/img/git-hover.svg);
         }
         &::before {
             content: '';
@@ -386,7 +385,7 @@ body {
             height: 25px;
             top: -3px;
             left: -30px;
-            background-image: url(../../assets/image/git.svg);
+            background-image: url(../../assets/img/git.svg);
             background-size: 25px;
             transition: 0.3s;
         }
@@ -394,7 +393,6 @@ body {
     .years {
         font-family: Arial, Helvetica, sans-serif;
         font-size: 10px;
-        margin-left: 50px;
     }
 }
 
@@ -533,7 +531,7 @@ body {
     }
 }
 
-@media screen and (min-width: 721px) and (max-width: 1028px) {
+@media screen and (min-width: 768px) and (max-width: 1028px) {
     .level {
         width: 35%;
         flex: 0 1 35%;
@@ -544,7 +542,11 @@ body {
         flex-direction: column;
         .layout {
             flex: 100 1 auto;
-            height: 30vh;
+            height: 25vh;
+
+            .table {
+                margin-top: -20px;
+            }
         }
         .editor {
             flex: 100 1 auto;
@@ -553,7 +555,7 @@ body {
         }
         .viewer {
             flex: 100 1 auto;
-            height: 35vh;
+            height: 40vh;
             width: 100%;
             margin: 5px 0 0 0;
         }
@@ -573,8 +575,8 @@ body {
         height: auto;
         flex: 0 0 100%;
         &__menu {
-            height: 100%;
-            padding-bottom: 0;
+            height: 87%;
+            padding-bottom: 50px;
             left: -768px;
         }
     }
